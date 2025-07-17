@@ -1,4 +1,4 @@
-import DotsLoading from "../DotsLoading"; 
+import Spinner from "../Spinner"; 
 import { Box, Typography } from "@mui/material";
 import ChatBubble from "./ChatBubble";
 import { useEffect, useRef } from "react";
@@ -38,7 +38,7 @@ export default function ChatArea({ messages }: ChatAreaProps) {
 
         // Typing indicator
         if (m.role === "assistant" && m.text === "__typing__") {
-          return <DotsLoading key={m.id} />;
+          return <Spinner key={m.id} />;
         }
 
         // User bubble

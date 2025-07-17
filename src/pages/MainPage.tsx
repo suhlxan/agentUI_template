@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { Box } from "@mui/material";
 import { useChatManager } from "../hooks/useChatManager";
+import { useModelSelector } from "../hooks/useModelSelector";
 
 import Sidebar from "../components/sidebar/SideBar";
 import Header from "../components/navbar/Header";
@@ -28,11 +28,7 @@ export default function MainPage() {
     { value: "test4", label: "test4", description: "Insert your model/agent purpose." },
   ];
 
- const [selectedModel, setSelectedModel] = useState<string | null>(null);
- 
- const chatTitle = selectedModel
-  ? models.find((m) => m.value === selectedModel)?.label ?? "Model Name"
-  : "Model Name";
+ const { selectedModel, setSelectedModel, chatTitle } = useModelSelector(models);
 
   const handleUserSubmit = (msg: string) => {
     sendMessage(msg);

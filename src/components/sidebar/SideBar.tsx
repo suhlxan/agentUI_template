@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Stack } from "@mui/material";
+import { Box, Stack, Typography, Divider } from "@mui/material";
 import SidebarItem from "./SidebarItem";
 import {
   sidebarTopItems,
@@ -43,30 +43,18 @@ export default function Sidebar({
       p={1}
       sx={{ transition: "width 0.3s ease" }}
     >
-      {/* Top row */}
+      {/* Top row with Menu only */}
       {collapsed ? (
         <Box width="100%">
-          {/* Menu Button */}
           <SidebarItem icon={menuItem.render} onClick={toggle} />
-
-          {/* Search Icon directly underneath */}
-          <Box mt={2}>
-            <SidebarItem icon={searchItem.render} />
-          </Box>
         </Box>
       ) : (
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={16}
-          width="100%"
-        >
+        <Stack direction="row" alignItems="center" spacing={15} width="100%">
           <SidebarItem icon={menuItem.render} onClick={toggle} />
-          <SidebarItem icon={searchItem.render} />
         </Stack>
       )}
 
-      {/* New Chat Button — icon always shown */}
+      {/* New Chat Button */}
       <Box mt={collapsed ? 2 : 3} width="100%">
         <SidebarItem
           icon={newChatAction.render}
@@ -76,8 +64,38 @@ export default function Sidebar({
         />
       </Box>
 
-      {/* Chat list — NO icons */}
-      <Box mt={collapsed ? 2 : 4} width="100%">
+      {/* Search Button */}
+      <Box width="100%">
+        <SidebarItem
+          icon={searchItem.render}
+          label={collapsed ? undefined : "Search chats"}
+          fullWidth
+          onClick={() => {/* will add search handler later */}}
+        />
+      </Box>
+
+      {/* Chats Label + Divider */}
+      <Box width="100%" mt={collapsed ? 3 : 4} mb={1} px={collapsed ? 0 : 1}>
+        {!collapsed && (
+          <>
+            <Typography
+              variant="caption"
+              sx={{
+                color: "#888",
+                fontWeight: 500,
+                textTransform: "uppercase",
+                fontSize: "0.65rem",
+              }}
+            >
+              Chats
+            </Typography>
+            {/* <Divider sx={{ my: 1, borderColor: "rgba(0, 0, 0, 0.05)" }} /> */}
+          </>
+        )}
+      </Box>
+
+      {/* Chat list */}
+      <Box width="100%">
         {chats.map((chat) => (
           <SidebarItem
             key={chat.id}

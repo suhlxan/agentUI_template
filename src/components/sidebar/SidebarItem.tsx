@@ -2,13 +2,12 @@ import { Box, Typography } from "@mui/material";
 import type { ReactNode } from "react";
 
 export interface SidebarItemProps {
-  icon?: React.ReactNode; 
+  icon?: React.ReactNode;
   label?: string;
   fullWidth?: boolean;
   selected?: boolean;
   onClick?: () => void;
 }
-
 
 export default function SidebarItem({
   icon,
@@ -22,10 +21,12 @@ export default function SidebarItem({
       sx={{
         display: "flex",
         alignItems: "center",
-        gap: 1.5,
+        justifyContent: label ? "flex-start" : "center",
+        gap: label ? 1.5 : 0,
         px: 1,
         py: 0.75,
-        width: fullWidth ? "100%" : "auto",
+        width: fullWidth ? "100%" : 40,
+        height: 40,
         borderRadius: 2,
         cursor: "pointer",
         transition: "background-color 0.2s ease",
@@ -33,7 +34,20 @@ export default function SidebarItem({
       }}
     >
       {icon}
-      {label && <Typography variant="body2">{label}</Typography>}
+      {label && (
+        <Typography
+          variant="body2"
+          noWrap
+          sx={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            maxWidth: "100%",
+          }}
+        >
+          {label}
+        </Typography>
+      )}
     </Box>
   );
 }

@@ -9,6 +9,7 @@ export default function GreetingMessage({ userName = "friend" }: GreetingMessage
   const greetings = useMemo(() => [
     "Where should we begin?",
     "Ready when you are.",
+    "What's on the agenda today?",
     "What's on your mind today?",
     `How can I help, ${userName}?`,
   ], [userName]);
