@@ -1,5 +1,6 @@
 // components/InputBar.tsx
-import { IconButton, InputBase, Paper } from "@mui/material";
+import TextareaAutosize from '@mui/material/TextareaAutosize';
+import { IconButton, Paper } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SettingsIcon from "@mui/icons-material/Tune";
 import SendIcon from "@mui/icons-material/Send";
@@ -47,13 +48,30 @@ export default function InputBar({
           <IconButton><SettingsIcon /></IconButton>
         </>
       )}
-      <InputBase
+      <TextareaAutosize
         placeholder={placeholder}
-        fullWidth
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-        sx={{ ml: hideIcons ? 0 : 2 }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmit();
+          }
+        }}
+        minRows={1}
+        maxRows={6}
+        style={{
+          flex: 1,
+          fontSize: '1rem',
+          fontFamily: 'inherit',
+          padding: 0,
+          marginLeft: hideIcons ? 0 : '16px',
+          lineHeight: 1.5,
+          border: 'none',
+          outline: 'none',
+          resize: 'none',
+          background: 'transparent',
+        }}
       />
       <IconButton onClick={handleSubmit} color="primary">
         {submitIcon}
