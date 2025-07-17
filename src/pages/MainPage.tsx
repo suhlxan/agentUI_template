@@ -1,20 +1,25 @@
 import { useState } from "react";
-import { Box, Typography } from "@mui/material";
-import { v4 as uuidv4 } from "uuid";
+import { Box } from "@mui/material";
+import { useChatManager } from "../hooks/useChatManager";
 
 import Sidebar from "../components/sidebar/SideBar";
-import Header from "../components/Header";
-import type { ModelDescriptor } from "../components/Header";
+import Header from "../components/navbar/Header";
+import type { ModelDescriptor } from "../components/navbar/Header";
 import InputBar from "../components/InputBar";
-import ChatArea from "../components/ChatArea"; 
-import type { Message } from "../components/ChatArea"; 
-
+import ChatArea from "../components/chat/ChatArea";
 import GreetingMessage from "../components/Greetings";
 
 export default function MainPage() {
-  const [model, setModel] = useState("xx-mini-high");
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]); 
+  const {
+    chats,
+    activeChatId,
+    currentChat,
+    newChat,
+    sendMessage,
+    setActiveChatId,
+  } = useChatManager();
+
+  const hasSubmitted = !!currentChat && currentChat.messages.length > 0;
 
   const models: ModelDescriptor[] = [
     { value: "test1", label: "test1", description: "Insert your model/agent purpose." },
@@ -23,47 +28,36 @@ export default function MainPage() {
     { value: "test4", label: "test4", description: "Insert your model/agent purpose." },
   ];
 
-  const selectedModel = models.find((m) => m.value === model);
+ const [selectedModel, setSelectedModel] = useState<string | null>(null);
+ 
+ const chatTitle = selectedModel
+  ? models.find((m) => m.value === selectedModel)?.label ?? "Model Name"
+  : "Model Name";
 
   const handleUserSubmit = (msg: string) => {
-    console.log("Send", msg, "using", model);
-    setHasSubmitted(true);
-    const newMessage: Message = {
-      id: uuidv4(),
-      role: "user",
-      text: msg,
-    };
-    setMessages((prev) => [...prev, newMessage]);
-
-    // Optional: fake assistant response
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: uuidv4(),
-          role: "assistant",
-          text: `You said: ${msg}`,
-        },
-      ]);
-    }, 500);
+    sendMessage(msg);
   };
 
   return (
     <Box display="flex" height="100vh" overflow="hidden">
-      <Sidebar />
+      <Sidebar
+        chats={chats}
+        activeChatId={activeChatId}
+        onSelectChat={setActiveChatId}
+        onNewChat={newChat}
+      />
 
       <Box flex={1} display="flex" flexDirection="column">
-        <Header
-          title={selectedModel?.label || "Model"}
-          model={model}
+       <Header
+          chatTitle={chatTitle}
+          model={selectedModel ?? ""}
           models={models}
-          onModelChange={setModel}
+          onModelChange={setSelectedModel}
           avatarSrc="/path/to/avatar.png"
           onAvatarClick={() => {}}
         />
-
         <Box flex={1} display="flex" flexDirection="column" overflow="hidden" px={2} pt={4}>
-          {!hasSubmitted && (
+          {!hasSubmitted ? (
             <Box
               flex={1}
               display="flex"
@@ -74,9 +68,7 @@ export default function MainPage() {
               <GreetingMessage userName="Balaji" />
               <InputBar onSubmit={handleUserSubmit} />
             </Box>
-          )}
-
-          {hasSubmitted && (
+          ) : (
             <Box display="flex" flexDirection="column" flex={1} height="100%" overflow="hidden">
               {/* Scrollable chat area */}
               <Box
@@ -90,7 +82,7 @@ export default function MainPage() {
                 className="hide-scrollbar"
               >
                 <Box width="100%" maxWidth={700}>
-                  <ChatArea messages={messages} />
+                  <ChatArea messages={currentChat?.messages ?? []} />
                 </Box>
               </Box>
 

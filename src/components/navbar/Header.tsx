@@ -20,17 +20,17 @@ export interface ModelDescriptor {
 }
 
 export interface HeaderProps {
-  title: string;
+  chatTitle: string;
   model: string;
   models: ModelDescriptor[];
   onModelChange: (value: string) => void;
   avatarSrc?: string;
   onAvatarClick?: () => void;
-  menuItems?: { label: string; onClick: () => void }[];
 }
 
+
 export default function Header({
-  title,
+  chatTitle,
   model,
   models,
   onModelChange,
@@ -78,8 +78,9 @@ export default function Header({
         }}
       >
         <Typography variant="h6" noWrap>
-          {title}
+          {chatTitle}
         </Typography>
+
       </Button>
 
       {/* The popover menu for models */}
@@ -132,8 +133,11 @@ export default function Header({
 
       {/* Avatar + dropdown */}
       {avatarSrc && (
-        <IconButton onClick={onAvatarClick} aria-label="Account menu">
-          <Avatar src={avatarSrc} />
+        <IconButton onClick={onAvatarClick} aria-label="Account menu" sx={{ p: 0.5 }}>
+          <Avatar
+            src={avatarSrc}
+            sx={{ width: 32, height: 32 }}
+          />
         </IconButton>
       )}
     </Box>

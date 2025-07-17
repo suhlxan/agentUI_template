@@ -1,5 +1,5 @@
-import { Box, Stack } from "@mui/material";
 import { useState } from "react";
+import { Box, Stack } from "@mui/material";
 import SidebarItem from "./SidebarItem";
 import {
   sidebarTopItems,
@@ -9,21 +9,31 @@ import type {
   SidebarTopItem,
   SidebarActionItem,
 } from "./SidebarConfig";
+import type { ChatSession } from "../../types/chat"; 
 
-export default function Sidebar() {
+interface SidebarProps {
+  chats: ChatSession[];
+  activeChatId: string | null;
+  onSelectChat: (id: string) => void;
+  onNewChat: () => void;
+}
+
+export default function Sidebar({
+  chats,
+  activeChatId,
+  onSelectChat,
+  onNewChat,
+}: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const toggle = () => setCollapsed((c) => !c);
 
-  // pull your two top‐row items
-  const menuItem   = sidebarTopItems .find((i) => i.key === "menu")!   as SidebarTopItem;
-  const searchItem = sidebarTopItems .find((i) => i.key === "search")! as SidebarTopItem;
-
-  // pull your single action
-  const newChat    = sidebarActions  .find((a) => a.key === "newChat")! as SidebarActionItem;
+  const menuItem = sidebarTopItems.find((i) => i.key === "menu")! as SidebarTopItem;
+  const searchItem = sidebarTopItems.find((i) => i.key === "search")! as SidebarTopItem;
+  const newChatAction = sidebarActions.find((a) => a.key === "newChat")! as SidebarActionItem;
 
   return (
     <Box
-      width={collapsed ? 40 : 220}
+      width={collapsed ? 60 : 220}
       height="100vh"
       bgcolor="#f5f5f5"
       borderRight="1px solid #ddd"
@@ -33,28 +43,51 @@ export default function Sidebar() {
       p={1}
       sx={{ transition: "width 0.3s ease" }}
     >
-      {/* Top row: menu toggle + optional search */}
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        width="100%"
-      >
-        <SidebarItem icon={menuItem.render} onClick={toggle} />
-        {!collapsed && <SidebarItem icon={searchItem.render} />}
-      </Stack>
-
-      {/* Body */}
+      {/* Top row */}
       {collapsed ? (
-        <Stack spacing={2} alignItems="center" mt={1}>
-          <SidebarItem icon={searchItem.render} />
-          <SidebarItem icon={newChat.render} />
-        </Stack>
-      ) : (
-        <Box mt={3} width="100%">
-          <SidebarItem icon={newChat.render} label={newChat.label} fullWidth />
+        <Box width="100%">
+          {/* Menu Button */}
+          <SidebarItem icon={menuItem.render} onClick={toggle} />
+
+          {/* Search Icon directly underneath */}
+          <Box mt={2}>
+            <SidebarItem icon={searchItem.render} />
+          </Box>
         </Box>
+      ) : (
+        <Stack
+          direction="row"
+          alignItems="center"
+          spacing={16}
+          width="100%"
+        >
+          <SidebarItem icon={menuItem.render} onClick={toggle} />
+          <SidebarItem icon={searchItem.render} />
+        </Stack>
       )}
+
+      {/* New Chat Button — icon always shown */}
+      <Box mt={collapsed ? 2 : 3} width="100%">
+        <SidebarItem
+          icon={newChatAction.render}
+          label={collapsed ? undefined : newChatAction.label}
+          fullWidth
+          onClick={onNewChat}
+        />
+      </Box>
+
+      {/* Chat list — NO icons */}
+      <Box mt={collapsed ? 2 : 4} width="100%">
+        {chats.map((chat) => (
+          <SidebarItem
+            key={chat.id}
+            label={collapsed ? undefined : chat.title}
+            fullWidth
+            selected={chat.id === activeChatId}
+            onClick={() => onSelectChat(chat.id)}
+          />
+        ))}
+      </Box>
     </Box>
   );
 }

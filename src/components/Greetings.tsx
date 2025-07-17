@@ -28,7 +28,7 @@ export default function GreetingMessage({ userName = "friend" }: GreetingMessage
         backgroundClip: 'text',
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
-        animation: 'glowMove 4s ease infinite',
+        animation: 'gradientFlash 4s ease infinite',
         fontWeight: 600,
         textAlign: 'center',
       }}

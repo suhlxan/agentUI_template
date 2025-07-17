@@ -2,11 +2,13 @@ import { Box, Typography } from "@mui/material";
 import type { ReactNode } from "react";
 
 export interface SidebarItemProps {
-  icon: ReactNode;
+  icon?: React.ReactNode; 
   label?: string;
-  onClick?: () => void;
   fullWidth?: boolean;
+  selected?: boolean;
+  onClick?: () => void;
 }
+
 
 export default function SidebarItem({
   icon,
