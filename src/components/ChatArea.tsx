@@ -1,5 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import ChatBubble from "./ChatBubble";
+import { useEffect, useRef } from "react";
 
 export interface Message {
   id: string;
@@ -12,21 +13,40 @@ export interface ChatAreaProps {
 }
 
 export default function ChatArea({ messages }: ChatAreaProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
     <Box
       flex={1}
-      overflow="auto"
       display="flex"
       flexDirection="column"
       py={1}
+      sx={{
+        overflowY: "auto",
+        scrollbarWidth: "none",
+        "&::-webkit-scrollbar": {
+          display: "none",
+        },
+      }}
     >
-      {messages.map((m) =>
-        m.role === "user" ? (
-          <ChatBubble key={m.id} role="user">
-            {m.text}
-          </ChatBubble>
-        ) : (
-          <Box key={m.id} px={2} py={0.5}>
+      {messages.map((m, i) => {
+        const prev = messages[i - 1];
+        const isAfterUser = prev?.role === "user";
+
+        if (m.role === "user") {
+          return (
+            <ChatBubble key={m.id} role="user">
+              {m.text}
+            </ChatBubble>
+          );
+        }
+
+        return (
+          <Box key={m.id} px={2} py={0.5} mt={isAfterUser ? 3 : 0.5}>
             <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
               {m.text}
             </Typography>
@@ -39,8 +59,11 @@ export default function ChatArea({ messages }: ChatAreaProps) {
               }}
             />
           </Box>
-        )
-      )}
+        );
+      })}
+
+      {/* Auto-scroll anchor */}
+      <div ref={scrollRef} />
     </Box>
   );
 }

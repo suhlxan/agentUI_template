@@ -9,17 +9,21 @@ import InputBar from "../components/InputBar";
 import ChatArea from "../components/ChatArea"; 
 import type { Message } from "../components/ChatArea"; 
 
+import GreetingMessage from "../components/Greetings";
+
 export default function MainPage() {
   const [model, setModel] = useState("xx-mini-high");
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]); // ⬅️ Messages state
+  const [messages, setMessages] = useState<Message[]>([]); 
 
   const models: ModelDescriptor[] = [
-    { value: "DEMO-xx", label: "DEMO-xx", description: "Insert your model/agent purpose." },
-    { value: "xx", label: "xx", description: "Insert your model/agent purpose." },
-    { value: "xx-mini", label: "xx-mini", description: "Insert your model/agent purpose." },
-    { value: "xx-mini-high", label: "xx-mini-high", description: "Insert your model/agent purpose." },
+    { value: "test1", label: "test1", description: "Insert your model/agent purpose." },
+    { value: "test2", label: "test2", description: "Insert your model/agent purpose." },
+    { value: "test3", label: "test3", description: "Insert your model/agent purpose." },
+    { value: "test4", label: "test4", description: "Insert your model/agent purpose." },
   ];
+
+  const selectedModel = models.find((m) => m.value === model);
 
   const handleUserSubmit = (msg: string) => {
     console.log("Send", msg, "using", model);
@@ -46,71 +50,70 @@ export default function MainPage() {
 
   return (
     <Box display="flex" height="100vh" overflow="hidden">
-  <Sidebar />
+      <Sidebar />
 
-  <Box flex={1} display="flex" flexDirection="column">
-    <Header
-      title="Your Agent Name"
-      model={model}
-      models={models}
-      onModelChange={setModel}
-      avatarSrc="/path/to/avatar.png"
-      onAvatarClick={() => {}}
-    />
+      <Box flex={1} display="flex" flexDirection="column">
+        <Header
+          title={selectedModel?.label || "Model"}
+          model={model}
+          models={models}
+          onModelChange={setModel}
+          avatarSrc="/path/to/avatar.png"
+          onAvatarClick={() => {}}
+        />
 
-    <Box
-      flex={1}
-      display="flex"
-      flexDirection="column"
-      position="relative"
-      px={2}
-      pt={4}
-    >
-      {!hasSubmitted && (
-        <Box
-          flex={1}
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Typography variant="h5" mb={4}>
-            What are you working on?
-          </Typography>
-          <InputBar onSubmit={handleUserSubmit} />
-        </Box>
-      )}
-
-      {hasSubmitted && (
-        <>
-          {/* SCROLLABLE MESSAGE AREA */}
-          <Box
-            flex={1}
-            overflow="auto"
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            pb={10} // Enough padding so chat never hides under input
-          >
-            <Box width="100%" maxWidth={700}>
-              <ChatArea messages={messages} />
+        <Box flex={1} display="flex" flexDirection="column" overflow="hidden" px={2} pt={4}>
+          {!hasSubmitted && (
+            <Box
+              flex={1}
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <GreetingMessage userName="Balaji" />
+              <InputBar onSubmit={handleUserSubmit} />
             </Box>
-          </Box>
+          )}
 
-          {/* FIXED INPUT BAR */}
-          <Box
-            position="absolute"
-            bottom={40}
-            width="100%"
-            display="flex"
-            justifyContent="center"
-          >
-            <InputBar onSubmit={handleUserSubmit} />
-          </Box>
-        </>
-      )}
+          {hasSubmitted && (
+            <Box display="flex" flexDirection="column" flex={1} height="100%" overflow="hidden">
+              {/* Scrollable chat area */}
+              <Box
+                flex={1}
+                overflow="auto"
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                px={2}
+                pt={2}
+                className="hide-scrollbar"
+              >
+                <Box width="100%" maxWidth={700}>
+                  <ChatArea messages={messages} />
+                </Box>
+              </Box>
+
+              {/* Locked input bar */}
+              <Box
+                width="100%"
+                display="flex"
+                justifyContent="center"
+                py={2}
+                px={2}
+                sx={{
+                  borderTop: "1px solid rgba(0,0,0,0.05)",
+                  backgroundColor: "background.paper",
+                }}
+              >
+                <Box width="100%" maxWidth={700}>
+                  <InputBar onSubmit={handleUserSubmit} />
+                </Box>
+              </Box>
+            </Box>
+          )}
+        </Box>
+      </Box>
     </Box>
-  </Box>
-</Box>
   );
 }

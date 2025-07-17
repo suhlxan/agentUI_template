@@ -80,9 +80,6 @@ export default function Header({
         <Typography variant="h6" noWrap>
           {title}
         </Typography>
-        <Typography component="span" sx={{ color: "text.secondary", ml: 0.5 }}>
-          {model}
-        </Typography>
       </Button>
 
       {/* The popover menu for models */}
