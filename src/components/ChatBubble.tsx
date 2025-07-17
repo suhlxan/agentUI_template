@@ -20,18 +20,15 @@ export default function ChatBubble({ role, children }: ChatBubbleProps) {
         elevation={0}
         sx={{
           p: 2,
-          backgroundColor: isUser ? theme.palette.primary.main : theme.palette.grey[100],
-          color: isUser ? theme.palette.primary.contrastText : theme.palette.text.primary,
-          borderRadius: 3,
-          borderTopRightRadius: isUser ? 4 : 12,
-          borderTopLeftRadius: isUser ? 12 : 4,
+          px: 3, 
+          backgroundColor: isUser ? "#f8f9fa" : theme.palette.grey[100],
+          color: "#000",
+          borderRadius: "24px", 
           maxWidth: "80%",
           whiteSpace: "pre-wrap",
         }}
       >
-        <Typography variant="body1">
-          {children}
-        </Typography>
+        <Typography variant="body1">{children}</Typography>
       </Paper>
     </Box>
   );
