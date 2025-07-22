@@ -21,6 +21,15 @@ html, body {
   }
 }
 
+.gradient-fill-text {
+  background: linear-gradient(270deg, #4adede, #3cb0d8, #4adede);
+  background-size: 400% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientFlash 4s ease infinite;
+}
+
 /* Hide scrollbars but allow scrolling */
 .hide-scrollbar {
   scrollbar-width: none; /* Firefox */
