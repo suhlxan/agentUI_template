@@ -1,7 +1,9 @@
-import Spinner from "../Spinner"; 
-import { Box, Typography } from "@mui/material";
-import ChatBubble from "./ChatBubble";
 import { useEffect, useRef } from "react";
+import { Box, Typography } from "@mui/material";
+
+import Spinner from "../Spinner";
+import ChatBubble from "./ChatBubble";
+import * as styles from "./styles";
 
 export interface Message {
   id: string;
@@ -21,27 +23,15 @@ export default function ChatArea({ messages }: ChatAreaProps) {
   }, [messages]);
 
   return (
-    <Box
-      flex={1}
-      display="flex"
-      flexDirection="column"
-      py={1}
-      sx={{
-        overflowY: "auto",
-        scrollbarWidth: "none",
-        "&::-webkit-scrollbar": { display: "none" },
-      }}
-    >
+    <Box sx={styles.chatAreaContainer}>
       {messages.map((m, i) => {
         const prev = messages[i - 1];
         const isAfterUser = prev?.role === "user";
 
-        // Typing indicator
         if (m.role === "assistant" && m.text === "__typing__") {
           return <Spinner key={m.id} />;
         }
 
-        // User bubble
         if (m.role === "user") {
           return (
             <ChatBubble key={m.id} role="user">
@@ -50,25 +40,15 @@ export default function ChatArea({ messages }: ChatAreaProps) {
           );
         }
 
-        // Assistant message (not typing)
         return (
-          <Box key={m.id} px={2} py={0.5} mt={isAfterUser ? 3 : 0.5}>
+          <Box key={m.id} sx={styles.assistantMessageContainer(isAfterUser)}>
             <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
               {m.text}
             </Typography>
-            <Box
-              sx={{
-                height: "1px",
-                backgroundColor: "#000",
-                opacity: 0.03,
-                my: 1.5,
-              }}
-            />
+            <Box sx={styles.assistantMessageDivider} />
           </Box>
         );
       })}
-
-      {/* Auto-scroll anchor */}
       <div ref={scrollRef} />
     </Box>
   );

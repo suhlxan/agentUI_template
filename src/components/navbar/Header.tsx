@@ -1,6 +1,5 @@
-// src/components/Header.tsx
 import { useState } from "react";
-import type { MouseEvent } from "react";
+import type {MouseEvent }from "react";
 import {
   Box,
   Button,
@@ -12,12 +11,9 @@ import {
   IconButton,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import type { ModelDescriptor } from "../../types/models";
 
-export interface ModelDescriptor {
-  value: string;
-  label: string;
-  description?: string;
-}
+import * as styles from "./styles";
 
 export interface HeaderProps {
   chatTitle: string;
@@ -28,7 +24,6 @@ export interface HeaderProps {
   onAvatarClick?: () => void;
 }
 
-
 export default function Header({
   chatTitle,
   model,
@@ -37,7 +32,6 @@ export default function Header({
   avatarSrc,
   onAvatarClick,
 }: HeaderProps) {
-  // state for the model‐picker popover
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -46,44 +40,21 @@ export default function Header({
   const handleModelClose = () => setAnchorEl(null);
 
   return (
-    <Box
-      component="header"
-      display="flex"
-      alignItems="center"
-      height={64}
-      px={2}
-      borderColor="divider"
-      bgcolor="background.paper"
-    >
-
-      {/* Title + Model selector button */}
-       <Button
+    <Box component="header" sx={styles.headerContainer}>
+      <Button
         aria-label={`Agent selector, current model is ${model}`}
         id="model-switcher-button"
         aria-haspopup="menu"
         aria-expanded={open ? "true" : "false"}
         onClick={handleModelButtonClick}
         endIcon={<ExpandMoreIcon fontSize="small" sx={{ color: "text.secondary" }} />}
-        sx={{
-          textTransform: "none",
-          borderRadius: 1,
-          minHeight: 'auto',
-          px: 2,
-          py: 0.5,
-          gap: 1,
-          fontSize: "1rem",
-          color: "text.primary",
-         bgcolor: "transparent",
-          "&:hover": { bgcolor: "action.hover" },
-        }}
+        sx={styles.modelButton}
       >
         <Typography variant="h6" noWrap>
           {chatTitle}
         </Typography>
-
       </Button>
 
-      {/* The popover menu for models */}
       <Menu
         id="model-switcher-menu"
         anchorEl={anchorEl}
@@ -92,14 +63,9 @@ export default function Header({
         MenuListProps={{
           "aria-labelledby": "model-switcher-button",
         }}
-        sx={{
-          "& .MuiPaper-root": { borderRadius: 2 },
-        }}
+        sx={styles.modelMenu}
       >
-        <Typography
-          variant="subtitle2"
-          sx={{ px: 2, pt: 1, pb: 0.5, color: "text.secondary" }}
-        >
+        <Typography variant="subtitle2" sx={styles.menuHeader}>
           Models
         </Typography>
         {models.map((m) => (
@@ -120,7 +86,7 @@ export default function Header({
         ))}
         <MenuItem
           onClick={() => {
-            /* e.g. “More models” handler */
+            // More models action
           }}
           sx={{ justifyContent: "center", pt: 1 }}
         >
@@ -128,16 +94,11 @@ export default function Header({
         </MenuItem>
       </Menu>
 
-      {/* Push everything to the right */}
       <Box flexGrow={1} />
 
-      {/* Avatar + dropdown */}
       {avatarSrc && (
-        <IconButton onClick={onAvatarClick} aria-label="Account menu" sx={{ p: 0.5 }}>
-          <Avatar
-            src={avatarSrc}
-            sx={{ width: 32, height: 32 }}
-          />
+        <IconButton onClick={onAvatarClick} aria-label="Account menu" sx={styles.avatarIcon}>
+          <Avatar src={avatarSrc} sx={styles.avatarImage} />
         </IconButton>
       )}
     </Box>
