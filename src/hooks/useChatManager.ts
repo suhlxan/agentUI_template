@@ -163,14 +163,24 @@ export function useChatManager() {
 // };
 
   // 4. Rename chat
+  
   const renameChat = (updatedChat: ChatSession) => {
-  setChats((prevChats) =>
-    prevChats.map((chat) =>
-      chat.id === updatedChat.id ? { ...chat, title: updatedChat.title } : chat
-    )
-  );
-};
+    setChats((prevChats) =>
+      prevChats.map((chat) =>
+        chat.id === updatedChat.id ? { ...chat, title: updatedChat.title } : chat
+      )
+    );
+  };
 
+  const deleteChat = (chatToDelete: ChatSession) => {
+    setChats((prev) => prev.filter((c) => c.id !== chatToDelete.id));
+    if (chatToDelete.id === activeChatId) {
+      setActiveChatId((prev) => {
+        const remaining = chats.filter((c) => c.id !== chatToDelete.id);
+        return remaining.length > 0 ? remaining[0].id : null;
+      });
+    }
+  };
 
   const currentChat = chats.find((chat) => chat.id === activeChatId) || null;
 
@@ -182,5 +192,6 @@ export function useChatManager() {
     sendMessage,
     setActiveChatId,
     renameChat,
+    deleteChat
   };
 }

@@ -1,5 +1,4 @@
 import { Box, Typography } from "@mui/material";
-import type { ReactNode } from "react";
 
 export interface SidebarItemProps {
   icon?: React.ReactNode;

@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -5,20 +6,15 @@ import {
   Menu,
   MenuItem,
   Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
 } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { useState } from "react";
+import ConfirmDialog from "../ConfirmDialog";
+import EditableText from "../EditableText";
 import type { ChatSession } from "../../types/chat";
-
 import {
   sidebarItemBox,
   chatTitleText,
@@ -39,9 +35,10 @@ interface ChatSidebarItemProps {
   onDelete?: (chat: ChatSession) => void;
 }
 
+type MenuAction = "share" | "rename" | "archive" | "delete";
+
 export default function ChatSidebarItem({
   chat,
-  selected,
   onClick,
   onShare,
   onRename,
@@ -51,7 +48,6 @@ export default function ChatSidebarItem({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [hovered, setHovered] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
-  const [tempTitle, setTempTitle] = useState(chat.title || "");
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   const handleMenuOpen = (e: React.MouseEvent<HTMLElement>) => {
@@ -59,11 +55,32 @@ export default function ChatSidebarItem({
     setAnchorEl(e.currentTarget);
   };
 
-  const handleMenuClose = () => setAnchorEl(null);
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleMenuAction = (action: MenuAction) => {
+    switch (action) {
+      case "share":
+        handleMenuClose();
+        return onShare?.(chat);
+      case "rename":
+        setIsRenaming(true);
+        handleMenuClose();
+        return;
+      case "archive":
+        handleMenuClose();
+        return onArchive?.(chat);
+      case "delete":
+        handleMenuClose();
+        return setShowConfirmDelete(true);
+    }
+  };
 
   return (
     <Box
-      onClick={onClick}
+      // disable normal click-to-select while renaming
+      onClick={isRenaming ? undefined : onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       sx={{
@@ -73,32 +90,14 @@ export default function ChatSidebarItem({
       }}
     >
       {isRenaming ? (
-        <input
-          type="text"
-          value={tempTitle}
-          onChange={(e) => setTempTitle(e.target.value)}
-          onBlur={() => {
+        <EditableText
+          key={chat.id}
+          value={chat.title || ""}
+          onSubmit={(newTitle) => {
+            onRename?.({ ...chat, title: newTitle });
             setIsRenaming(false);
-            if (tempTitle.trim() && tempTitle !== chat.title) {
-              onRename?.({ ...chat, title: tempTitle });
-            }
           }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              (e.target as HTMLInputElement).blur();
-            } else if (e.key === "Escape") {
-              setIsRenaming(false);
-              setTempTitle(chat.title || "");
-            }
-          }}
-          autoFocus
-          style={{
-            fontSize: "0.875rem",
-            width: "100%",
-            border: "none",
-            background: "transparent",
-            outline: "none",
-          }}
+           onCancel={() => setIsRenaming(false)}
         />
       ) : (
         <Typography variant="body2" noWrap sx={chatTitleText}>
@@ -114,7 +113,11 @@ export default function ChatSidebarItem({
           alignItems: "center",
         }}
       >
-        <IconButton size="small" onClick={handleMenuOpen} sx={iconButton}>
+        <IconButton
+          size="small"
+          onClick={handleMenuOpen}
+          sx={iconButton}
+        >
           <MoreHorizIcon sx={{ fontSize: iconSize }} />
         </IconButton>
 
@@ -124,15 +127,16 @@ export default function ChatSidebarItem({
           onClose={handleMenuClose}
           onClick={(e) => e.stopPropagation()}
           PaperProps={{ sx: menuPaper }}
+          disableRestoreFocus  // stops MUI from yanking focus back
         >
-          <MenuItem onClick={() => { handleMenuClose(); onShare?.(chat); }}>
+          <MenuItem onClick={() => handleMenuAction("share")}>
             <Box sx={menuItemContent}>
               <IosShareIcon sx={{ fontSize: iconSize }} />
               <Typography variant="body2">Share</Typography>
             </Box>
           </MenuItem>
 
-          <MenuItem onClick={() => { handleMenuClose(); setIsRenaming(true); }}>
+          <MenuItem onClick={() => handleMenuAction("rename")}>
             <Box sx={menuItemContent}>
               <EditOutlinedIcon sx={{ fontSize: iconSize }} />
               <Typography variant="body2">Rename</Typography>
@@ -141,7 +145,7 @@ export default function ChatSidebarItem({
 
           <Divider />
 
-          <MenuItem onClick={() => { handleMenuClose(); onArchive?.(chat); }}>
+          <MenuItem onClick={() => handleMenuAction("archive")}>
             <Box sx={menuItemContent}>
               <Inventory2OutlinedIcon sx={{ fontSize: iconSize }} />
               <Typography variant="body2">Archive</Typography>
@@ -149,10 +153,7 @@ export default function ChatSidebarItem({
           </MenuItem>
 
           <MenuItem
-            onClick={() => {
-              handleMenuClose();
-              setShowConfirmDelete(true);
-            }}
+            onClick={() => handleMenuAction("delete")}
             sx={deleteMenuItem}
           >
             <Box sx={menuItemContent}>
@@ -163,47 +164,26 @@ export default function ChatSidebarItem({
         </Menu>
       </Box>
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog
+      <ConfirmDialog
         open={showConfirmDelete}
-        onClose={() => setShowConfirmDelete(false)}
-        PaperProps={{
-            sx: {
-            borderRadius: 3, 
-            boxShadow: 6,    
-            p: 1.5,          
-            },
+        title="Delete Chat"
+        content={
+          <>
+            Are you sure you want to delete this chat? All messages will be{" "}
+            <span style={{ textDecoration: "underline" }}>
+              permanently removed
+            </span>
+            .
+          </>
+        }
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onCancel={() => setShowConfirmDelete(false)}
+        onConfirm={() => {
+          setShowConfirmDelete(false);
+          onDelete?.(chat);
         }}
-        BackdropProps={{
-            sx: {
-            backdropFilter: "blur(2px)",
-            backgroundColor: "rgba(0, 0, 0, 0.2)", 
-            },
-        }}
-        >
-        <DialogTitle>Delete Chat</DialogTitle>
-        <DialogContent>
-            <Typography>Are you sure you want to delete this chat?</Typography>
-        </DialogContent>
-        <DialogActions>
-            <Button onClick={() => setShowConfirmDelete(false)}>Cancel</Button>
-            <Button
-            onClick={() => {
-                setShowConfirmDelete(false);
-                onDelete?.(chat);
-            }}
-            sx={{
-                backgroundColor: 'red',
-                color: 'white',
-                borderRadius: 2, 
-                px: 2.5,
-                '&:hover': { backgroundColor: '#c62828' },
-                }}
-            >
-            Delete
-            </Button>
-        </DialogActions>
-        </Dialog>
+      />
     </Box>
   );
 }

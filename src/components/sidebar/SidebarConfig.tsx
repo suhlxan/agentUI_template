@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
+import edit_square from "../../assets/edit_square.svg"; 
 
-const iconStyle = { fontSize: 24, color: "#444" };
+const iconStyle = { fontSize: 24, color: "#616161" }; //text.secondary in MUI's default light theme
 
 export interface SidebarTopItem {
   key: "menu" | "search";
@@ -31,12 +32,16 @@ export const sidebarActions: SidebarActionItem[] = [
     key: "newChat",
     label: "New chat",
     render: (
-      <span
-        className="material-symbols-outlined"
-        style={{ fontSize: 22, color: "#444", verticalAlign: "middle" }}
-      >
-        edit_square
-      </span>
+      <img
+        src={edit_square}
+        alt="New chat"
+        style={{
+          width: 22,
+          height: 22,
+          objectFit: "contain",
+          verticalAlign: "middle",
+        }}
+      />
     ),
   },
 ];

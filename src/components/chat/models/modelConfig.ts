@@ -1,6 +1,6 @@
 // features/chat/model/modelConfig.ts
 
-import type { ModelDescriptor } from "../../../components/navbar/Header"; // adjust path as needed
+import type { ModelDescriptor } from "../../../types/models"; // adjust path as needed
 
 export const models: ModelDescriptor[] = [
   { value: "test1", label: "Test Model 1", description: "Description for Test Model 1" },

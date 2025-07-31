@@ -1,48 +1,59 @@
-// Chat/styles.ts
 import type { SxProps, Theme } from "@mui/material";
 
-// ChatArea Styles 
+// ChatArea Styles
 
-export const chatAreaContainer: SxProps<Theme> = {
+export const chatAreaContainer: SxProps<Theme> = (theme) => ({
   flex: 1,
   display: "flex",
   flexDirection: "column",
-  py: 1,
+  paddingTop: theme.spacing(1),
+  paddingBottom: theme.spacing(1),
   overflowY: "auto",
   scrollbarWidth: "none", // Firefox
   "&::-webkit-scrollbar": {
     display: "none", // Chrome/Safari
   },
-};
-
-export const assistantMessageContainer = (isAfterUser: boolean): SxProps<Theme> => ({
-  px: 2,
-  py: 0.5,
-  mt: isAfterUser ? 3 : 0.5,
 });
 
-export const assistantMessageDivider: SxProps<Theme> = {
+export const assistantMessageContainer = (
+  isAfterUser: boolean
+): SxProps<Theme> => (theme) => ({
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
+  paddingTop: theme.spacing(0.5),
+  paddingBottom: theme.spacing(0.5),
+  marginTop: theme.spacing(isAfterUser ? 3 : 0.5),
+});
+
+export const assistantMessageDivider: SxProps<Theme> = (theme) => ({
   height: "1px",
-  backgroundColor: "#000",
+  backgroundColor: theme.palette.divider,
   opacity: 0.03,
-  my: 1.5,
-};
+  marginTop: theme.spacing(1.5),
+  marginBottom: theme.spacing(1.5),
+});
 
-// ChatBubble Styles 
+// ChatBubble Styles
 
-export const chatBubbleWrapper = (isUser: boolean): SxProps<Theme> => ({
+export const chatBubbleWrapper = (isUser: boolean): SxProps<Theme> => (
+  theme
+) => ({
   display: "flex",
   justifyContent: isUser ? "flex-end" : "flex-start",
-  px: 2,
-  py: 0.5,
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
+  paddingTop: theme.spacing(0.5),
+  paddingBottom: theme.spacing(0.5),
 });
 
 export const chatBubblePaper = (isUser: boolean, theme: Theme): SxProps<Theme> => ({
-  p: 2,
-  px: 3,
-  backgroundColor: isUser ? "#f8f9fa" : theme.palette.grey[100],
-  color: "#000",
-  borderRadius: "24px",
+  padding: theme.spacing(2),
+  paddingLeft: theme.spacing(3),
+  paddingRight: theme.spacing(3),
+  backgroundColor: isUser ? theme.palette.grey[50] : theme.palette.grey[100],
+  color: theme.palette.text.primary,
+  borderRadius: theme.spacing(3),
   maxWidth: "80%",
   whiteSpace: "pre-wrap",
 });
+

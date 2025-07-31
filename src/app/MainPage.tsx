@@ -1,10 +1,10 @@
 import { Box } from "@mui/material";
 import { useChatManager } from "../hooks/useChatManager";
-import { useModelSelector } from "../hooks/useModelSelector";
+//import { useModelSelector } from "../hooks/useModelSelector";
 
 import Sidebar from "../components/sidebar/SideBar";
-import Header from "../components/navbar/Header";
-import { models } from "../components/chat/models/modelConfig";
+//import Header from "../components/navbar/Header";
+//import { models } from "../components/chat/models/modelConfig";
 import InputBar from "../components/InputBar";
 import ChatArea from "../components/chat/ChatArea";
 import GreetingMessage from "../components/Greetings";
@@ -21,11 +21,12 @@ export default function MainPage() {
     sendMessage,
     setActiveChatId,
     renameChat,
+    deleteChat
   } = useChatManager();
 
   const hasSubmitted = !!currentChat && currentChat.messages.length > 0;
 
-  const { selectedModel, setSelectedModel, chatTitle } = useModelSelector(models);
+  //const { selectedModel, setSelectedModel, chatTitle } = useModelSelector(models);
 
   const handleUserSubmit = (msg: string) => {
     sendMessage(msg);
@@ -39,18 +40,18 @@ export default function MainPage() {
         onSelectChat={setActiveChatId}
         onNewChat={newChat}
         onRenameChat={renameChat}
-        onDeleteChat={() => {}}
+        onDeleteChat={deleteChat}
       />
 
       <Box sx={styles.contentWrapperStyles}>
-        <Header
+        {/* <Header
           chatTitle={chatTitle}
           model={selectedModel ?? ""}
           models={models}
           onModelChange={setSelectedModel}
           avatarSrc="/path/to/avatar.png"
           onAvatarClick={() => {}}
-        />
+        /> */}
 
         <Box sx={styles.innerContentStyles}>
           {!hasSubmitted ? (

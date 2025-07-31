@@ -29,9 +29,14 @@ export default function ChatArea({ messages }: ChatAreaProps) {
         const isAfterUser = prev?.role === "user";
 
         if (m.role === "assistant" && m.text === "__typing__") {
-          return <Spinner key={m.id} />;
+          return (
+            <Box key={m.id} sx={styles.assistantMessageContainer(isAfterUser)}>
+              <Spinner />
+              <Box sx={styles.assistantMessageDivider} />
+            </Box>
+          );
         }
-
+        
         if (m.role === "user") {
           return (
             <ChatBubble key={m.id} role="user">

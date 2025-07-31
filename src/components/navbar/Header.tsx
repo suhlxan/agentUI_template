@@ -1,18 +1,15 @@
-import { useState } from "react";
-import type {MouseEvent }from "react";
+import { useState, type MouseEvent } from "react";
 import {
   Box,
   Button,
   Avatar,
   Menu,
   MenuItem,
-  ListItemText,
   Typography,
   IconButton,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import type { ModelDescriptor } from "../../types/models";
-
 import * as styles from "./styles";
 
 export interface HeaderProps {
@@ -37,6 +34,7 @@ export default function Header({
 
   const handleModelButtonClick = (e: MouseEvent<HTMLButtonElement>) =>
     setAnchorEl(e.currentTarget);
+
   const handleModelClose = () => setAnchorEl(null);
 
   return (
@@ -45,7 +43,7 @@ export default function Header({
         aria-label={`Agent selector, current model is ${model}`}
         id="model-switcher-button"
         aria-haspopup="menu"
-        aria-expanded={open ? "true" : "false"}
+        aria-expanded={open ? "true" : undefined}
         onClick={handleModelButtonClick}
         endIcon={<ExpandMoreIcon fontSize="small" sx={{ color: "text.secondary" }} />}
         sx={styles.modelButton}
@@ -60,14 +58,13 @@ export default function Header({
         anchorEl={anchorEl}
         open={open}
         onClose={handleModelClose}
-        MenuListProps={{
-          "aria-labelledby": "model-switcher-button",
-        }}
+        MenuListProps={{ "aria-labelledby": "model-switcher-button" }}
         sx={styles.modelMenu}
       >
         <Typography variant="subtitle2" sx={styles.menuHeader}>
           Models
         </Typography>
+
         {models.map((m) => (
           <MenuItem
             key={m.value}
@@ -76,18 +73,23 @@ export default function Header({
               onModelChange(m.value);
               handleModelClose();
             }}
+            sx={styles.selectedMenuItem}
           >
-            <ListItemText
-              primary={m.label}
-              secondary={m.description}
-              primaryTypographyProps={{ fontWeight: 500 }}
-            />
+            <Box>
+              <Typography variant="body1" fontWeight={500} color="text.primary">
+                {m.label}
+              </Typography>
+              {m.description && (
+                <Typography variant="body2" color="text.secondary">
+                  {m.description}
+                </Typography>
+              )}
+            </Box>
           </MenuItem>
         ))}
+
         <MenuItem
-          onClick={() => {
-            // More models action
-          }}
+          onClick={handleModelClose}
           sx={{ justifyContent: "center", pt: 1 }}
         >
           More models…
@@ -97,7 +99,11 @@ export default function Header({
       <Box flexGrow={1} />
 
       {avatarSrc && (
-        <IconButton onClick={onAvatarClick} aria-label="Account menu" sx={styles.avatarIcon}>
+        <IconButton
+          onClick={onAvatarClick}
+          aria-label="Account menu"
+          sx={styles.avatarIcon}
+        >
           <Avatar src={avatarSrc} sx={styles.avatarImage} />
         </IconButton>
       )}

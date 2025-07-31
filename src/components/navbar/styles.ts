@@ -2,52 +2,70 @@
 import type { SxProps, Theme } from "@mui/material";
 
 // Main header container
-export const headerContainer: SxProps<Theme> = {
+export const headerContainer: SxProps<Theme> = (theme) => ({
   display: "flex",
   alignItems: "center",
-  height: 64,
-  px: 2,
-  borderColor: "divider",
-  bgcolor: "background.paper",
+  height: `calc(${theme.spacing(8)} + 0px)`, // 64px using theme spacing
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
+  borderColor: theme.palette.divider,
+  backgroundColor: theme.palette.background.paper,
+});
+
+// Typography for the chat title
+export const selectedMenuItem: SxProps<Theme> = {
+  '&.Mui-selected': {
+    backgroundColor: 'action.selected',
+    '& .MuiTypography-root': {
+      color: 'text.primary',
+    },
+  },
 };
 
 // Model switcher button
-export const modelButton: SxProps<Theme> = {
+export const modelButton: SxProps<Theme> = (theme) => ({
   textTransform: "none",
-  borderRadius: 1,
+  borderRadius: 2, 
   minHeight: "auto",
-  px: 2,
-  py: 0.5,
-  gap: 1,
-  fontSize: "1rem",
-  color: "text.primary",
-  bgcolor: "transparent",
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
+  paddingTop: theme.spacing(0.5),
+  paddingBottom: theme.spacing(0.5),
+  gap: theme.spacing(1),
+  fontSize: theme.typography.body1.fontSize,
+  color: theme.palette.text.primary,
+  backgroundColor: "transparent",
   "&:hover": {
-    bgcolor: "action.hover",
+    backgroundColor: theme.palette.action.hover,
   },
-};
+});
 
 // Menu paper
-export const modelMenu: SxProps<Theme> = {
+export const modelMenu: SxProps<Theme> = (theme) => ({
   "& .MuiPaper-root": {
     borderRadius: 2,
+    width: theme.spacing(37.5), // 300px
+    maxWidth: "90vw",
   },
-};
+});
 
-// Typography inside menu
-export const menuHeader: SxProps<Theme> = {
-  px: 2,
-  pt: 1,
-  pb: 0.5,
-  color: "text.secondary",
-};
 
-// Avatar icon
-export const avatarIcon: SxProps<Theme> = {
-  p: 0.5,
-};
+// Typography inside menu header
+export const menuHeader: SxProps<Theme> = (theme) => ({
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
+  paddingTop: theme.spacing(1),
+  paddingBottom: theme.spacing(0.5),
+  color: theme.palette.text.secondary,
+});
 
-export const avatarImage: SxProps<Theme> = {
-  width: 32,
-  height: 32,
-};
+// Avatar icon button
+export const avatarIcon: SxProps<Theme> = (theme) => ({
+  padding: theme.spacing(0.5),
+});
+
+// Avatar image size
+export const avatarImage: SxProps<Theme> = (theme) => ({
+  width: theme.spacing(4),  // 32px
+  height: theme.spacing(4), // 32px
+});

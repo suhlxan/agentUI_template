@@ -1,16 +1,21 @@
-import { useState } from "react";
+// src/components/sidebar/Sidebar.tsx
+import React, { useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import ChatSidebarItem from "./ChatSidebarItem";
 import SidebarItem from "./SidebarItem";
-import {
-  sidebarTopItems,
-  sidebarActions,
-} from "./SidebarConfig";
-import type {
-  SidebarTopItem,
-  SidebarActionItem,
-} from "./SidebarConfig";
+import { sidebarTopItems, sidebarActions } from "./SidebarConfig";
+import type { SidebarTopItem, SidebarActionItem } from "./SidebarConfig";
 import type { ChatSession } from "../../types/chat";
+
+import {
+  sidebarContainer,
+  sidebarToggleWrapper,
+  sidebarHeaderStack,
+  sidebarFullWidthWrapper,
+  sectionHeaderWrapper,
+  sectionCaption,
+  chatListWrapper,
+} from "./styles";
 
 interface SidebarProps {
   chats: ChatSession[];
@@ -39,34 +44,31 @@ export default function Sidebar({
   const handleShareChat = (chat: ChatSession) => {
     console.log("Share chat:", chat);
   };
-
   const handleArchiveChat = (chat: ChatSession) => {
     console.log("Archived chat:", chat);
   };
 
   return (
     <Box
-      width={collapsed ? 60 : 220}
-      height="100vh"
-      bgcolor="#f5f5f5"
-      borderRight="1px solid #ddd"
-      display="flex"
-      flexDirection="column"
-      alignItems={collapsed ? "center" : "flex-start"}
-      p={1}
-      sx={{ transition: "width 0.3s ease" }}
+      sx={{
+        ...sidebarContainer,
+        width: collapsed ? 60 : 260,
+        alignItems: collapsed ? "center" : "flex-start",
+      }}
     >
+      {/* top toggle */}
       {collapsed ? (
-        <Box width="100%">
+        <Box sx={sidebarToggleWrapper}>
           <SidebarItem icon={menuItem.render} onClick={toggle} />
         </Box>
       ) : (
-        <Stack direction="row" alignItems="center" spacing={15} width="100%">
+        <Stack sx={sidebarHeaderStack} spacing={1}>
           <SidebarItem icon={menuItem.render} onClick={toggle} />
         </Stack>
       )}
 
-      <Box mt={collapsed ? 2 : 3} width="100%">
+      {/* new chat */}
+      <Box sx={{ ...sidebarFullWidthWrapper, mt: collapsed ? 2 : 3 }}>
         <SidebarItem
           icon={newChatAction.render}
           label={collapsed ? undefined : newChatAction.label}
@@ -75,38 +77,35 @@ export default function Sidebar({
         />
       </Box>
 
-      <Box width="100%">
+      {/* search */}
+      <Box sx={sidebarFullWidthWrapper}>
         <SidebarItem
           icon={searchItem.render}
           label={collapsed ? undefined : "Search chats"}
           fullWidth
-          onClick={() => {/* search action */}}
+          onClick={() => { /* search */ }}
         />
       </Box>
 
-      <Box width="100%" mt={collapsed ? 3 : 4} mb={1} px={collapsed ? 0 : 1}>
+      {/* section header */}
+      <Box
+        sx={{
+          ...sectionHeaderWrapper,
+          mt: collapsed ? 3 : 4,
+          px: collapsed ? 0 : 1.5,
+        }}
+      >
         {!collapsed && (
-          <Typography
-            variant="caption"
-            sx={{
-              color: "#888",
-              fontWeight: 500,
-              textTransform: "uppercase",
-              fontSize: "0.65rem",
-            }}
-          >
+          <Typography variant="caption" sx={sectionCaption}>
             Chats
           </Typography>
         )}
       </Box>
 
-      <Box
-        width="100%"
-        mt={0.5}
-        sx={{ maxHeight: "calc(100vh - 250px)", overflowY: "auto" }}
-      >
-        {chats.map((chat) =>
-          collapsed ? null : (
+      {/* chat list */}
+      <Box sx={{ ...chatListWrapper, mt: 0.5 }}>
+        {!collapsed &&
+          chats.map((chat) => (
             <ChatSidebarItem
               key={chat.id}
               chat={chat}
@@ -117,8 +116,7 @@ export default function Sidebar({
               onArchive={handleArchiveChat}
               onDelete={onDeleteChat}
             />
-          )
-        )}
+          ))}
       </Box>
     </Box>
   );
