@@ -1,38 +1,20 @@
-// import { CssBaseline, ThemeProvider } from '@mui/material';
-// import theme from './theme/theme';
-// import MainPage from "./app/MainPage"; 
-
-// export function App() {
-//   return (
-//     <ThemeProvider theme={theme}>
-//       <CssBaseline /> 
-//       <MainPage />
-//     </ThemeProvider>
-//   );
-// }
-
+import { useState } from "react";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import theme from './theme/theme';
 import MainPage from "./app/MainPage"; 
+import LoginPage from "./app/LoginPage";
 
 export function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <MainPage />
+      {loggedIn ? (
+        <MainPage />
+      ) : (
+        <LoginPage onLogin={() => setLoggedIn(true)} />
+      )}
     </ThemeProvider>
   );
 }
-
-// import DummyEditableExample from "./components/testing";
-
-// export function App() {
-//   return (
-//     <div style={{ padding: 40 }}>
-//       <DummyEditableExample />
-//     </div>
-//   );
-// }
-
-// export default App;
-

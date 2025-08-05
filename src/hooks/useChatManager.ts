@@ -33,20 +33,18 @@ export function useChatManager() {
   };
 
   // 3. Handle message sending and title updating
-  const sendMessage = (text: string) => {
-    if (!activeChatId) return;
-
+const sendMessage = async (text: string) => {
+    if (!activeChatId) return
     const userMsg: Message = {
       id: uuidv4(),
       role: "user",
       text,
-    };
-
-    const assistantMsg: Message = {
+    }
+    const typingMsg: Message = {
       id: uuidv4(),
       role: "assistant",
       text: "__typing__",
-    };
+    }
 
     setChats((prevChats) =>
       prevChats.map((chat) => {
@@ -60,110 +58,103 @@ export function useChatManager() {
         return {
           ...chat,
           title: isFirstMessage ? firstSentence || "New Chat" : chat.title,
-          messages: [...chat.messages, userMsg, assistantMsg],
+          messages: [...chat.messages, userMsg, typingMsg],
         };
       })
     );
 
     // Simulate delayed assistant response
-    setTimeout(() => {
-      setChats((prevChats) =>
-        prevChats.map((chat) =>
-          chat.id === activeChatId
-            ? {
-                ...chat,
-                messages: chat.messages.map((m) =>
-                  m.text === "__typing__"
-                    ? { ...m, text: `You said: ${text}` }
-                    : m
-                ),
+  //   setTimeout(() => {
+  //     setChats((prevChats) =>
+  //       prevChats.map((chat) =>
+  //         chat.id === activeChatId
+  //           ? {
+  //               ...chat,
+  //               messages: chat.messages.map((m) =>
+  //                 m.text === "__typing__"
+  //                   ? { ...m, text: `You said: ${text}` }
+  //                   : m
+  //               ),
+  //             }
+  //           : chat
+  //       )
+  //     );
+  //   }, 1000);
+  // };
+
+    try {
+      const message_body = {
+        query: {
+          application: {
+            aplctn_cd: "edagnai",
+            app_id: "edadip",
+            app_lvl_prefix: "supportcbt_dml"
+          },
+          prompt: {
+            messages: [
+              {
+                role: "user",
+                content: text
               }
-            : chat
-        )
+            ]
+          },
+          model: {
+            model: "snowflake-llama-3.3-70b",
+            options: {}
+          },
+          response_format: {
+            type: "json",
+            schema: {}
+          }
+        }
+      };
+      const response = await sendToAgent(JSON.stringify(message_body));
+      console.log("Agent API response:", response);
+      // Validate response
+      let replyText = "Agent did not return a valid reply.";
+      if (response && typeof response === "string") {
+        replyText = response;
+      }
+      const assistantMsg: Message = {
+        id: uuidv4(),
+        role: "assistant",
+        text: replyText,
+      }
+      // Replace typing with actual agent response
+      setChats((prevChats) =>
+        prevChats.map((chat) => {
+          if (chat.id !== activeChatId) return chat
+          const updatedMessages = chat.messages.map((m) =>
+            m.text === "__typing__" ? assistantMsg : m
+          )
+          return {
+            ...chat,
+            messages: updatedMessages,
+          };
+        })
       );
-    }, 1000);
-  };
+    } catch (err) {
+      console.error("Failed to fetch agent response", err);
+      // Optionally replace typing with an error message
+      setChats((prevChats) =>
+        prevChats.map((chat) => {
+          if (chat.id !== activeChatId) return chat
+          const updatedMessages = chat.messages.map((m) =>
+            m.text === "__typing__"
+              ? { ...m, text: "Agent failed to respond." }
+              : m
+          );
 
-//   const sendMessage = async (text: string) => {
-//   if (!activeChatId) return;
-
-//   const userMsg: Message = {
-//     id: uuidv4(),
-//     role: "user",
-//     text,
-//   };
-
-//   const typingMsg: Message = {
-//     id: uuidv4(),
-//     role: "assistant",
-//     text: "__typing__",
-//   };
-
-//   // Add user message and typing indicator
-//   setChats((prevChats) =>
-//     prevChats.map((chat) => {
-//       if (chat.id !== activeChatId) return chat;
-
-//       const isFirstMessage = chat.messages.length === 0;
-//       const firstSentence = isFirstMessage
-//         ? text.split(/[.?!]/)[0].trim()
-//         : chat.title;
-
-//       return {
-//         ...chat,
-//         title: isFirstMessage ? firstSentence || "New Chat" : chat.title,
-//         messages: [...chat.messages, userMsg, typingMsg],
-//       };
-//     })
-//   );
-
-//   try {
-//     const response = await sendToAgent(text);
-//     const assistantMsg: Message = {
-//       id: uuidv4(),
-//       role: "assistant",
-//       text: response.reply, // assuming backend returns { reply: "..." }
-//     };
-
-//     // Replace typing with actual agent response
-//     setChats((prevChats) =>
-//       prevChats.map((chat) => {
-//         if (chat.id !== activeChatId) return chat;
-
-//         const updatedMessages = chat.messages.map((m) =>
-//           m.text === "__typing__" ? assistantMsg : m
-//         );
-
-//         return {
-//           ...chat,
-//           messages: updatedMessages,
-//         };
-//       })
-//     );
-//   } catch (err) {
-//     console.error("Failed to fetch agent response", err);
-//     // Optionally replace typing with an error message
-//     setChats((prevChats) =>
-//       prevChats.map((chat) => {
-//         if (chat.id !== activeChatId) return chat;
-
-//         const updatedMessages = chat.messages.map((m) =>
-//           m.text === "__typing__"
-//             ? { ...m, text: "Agent failed to respond." }
-//             : m
-//         );
-
-//         return {
-//           ...chat,
-//           messages: updatedMessages,
-//         };
-//       })
-//     );
-//   }
-// };
-
+          return {
+            ...chat,
+            messages: updatedMessages,
+          };
+        })
+      );
+    }
+  }
   // 4. Rename chat
-  
+
   const renameChat = (updatedChat: ChatSession) => {
     setChats((prevChats) =>
       prevChats.map((chat) =>
