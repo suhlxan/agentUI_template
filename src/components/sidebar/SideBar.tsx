@@ -7,6 +7,10 @@ import { sidebarTopItems, sidebarActions } from "./SidebarConfig";
 import type { SidebarTopItem, SidebarActionItem } from "./SidebarConfig";
 import type { ChatSession } from "../../types/chat";
 
+// Modular search imports
+import { useSidebarSearch } from "../../hooks/useSidebarSearch";
+import { SidebarSearch } from "./SidebarSearch";
+
 import {
   sidebarContainer,
   sidebarToggleWrapper,
@@ -37,16 +41,23 @@ export default function Sidebar({
   const [collapsed, setCollapsed] = useState(false);
   const toggle = () => setCollapsed((c) => !c);
 
+  // Pull menu & new-chat items from config
   const menuItem = sidebarTopItems.find((i) => i.key === "menu")! as SidebarTopItem;
-  const searchItem = sidebarTopItems.find((i) => i.key === "search")! as SidebarTopItem;
   const newChatAction = sidebarActions.find((a) => a.key === "newChat")! as SidebarActionItem;
 
-  const handleShareChat = (chat: ChatSession) => {
-    console.log("Share chat:", chat);
-  };
-  const handleArchiveChat = (chat: ChatSession) => {
-    console.log("Archived chat:", chat);
-  };
+  // Set up inline search (state + filter logic)
+  const {
+    active: searchActive,
+    query: searchQuery,
+    setQuery: setSearchQuery,
+    start: activateSearch,
+    cancel: cancelSearch,
+    filtered: filteredChats,
+  } = useSidebarSearch(chats);
+
+  // Optional handlers for share/archive
+  const handleShareChat = (chat: ChatSession) => console.log("Share chat:", chat);
+  const handleArchiveChat = (chat: ChatSession) => console.log("Archived chat:", chat);
 
   return (
     <Box
@@ -77,15 +88,15 @@ export default function Sidebar({
         />
       </Box>
 
-      {/* search */}
-      <Box sx={sidebarFullWidthWrapper}>
-        <SidebarItem
-          icon={searchItem.render}
-          label={collapsed ? undefined : "Search chats"}
-          fullWidth
-          onClick={() => { /* search */ }}
-        />
-      </Box>
+      {/* inline search */}
+      <SidebarSearch
+        active={searchActive}
+        query={searchQuery}
+        onQueryChange={setSearchQuery}
+        onActivate={activateSearch}
+        onCancel={cancelSearch}
+        collapsed={collapsed}
+      />
 
       {/* section header */}
       <Box
@@ -102,10 +113,10 @@ export default function Sidebar({
         )}
       </Box>
 
-      {/* chat list */}
+      {/* chat list (filtered when searching) */}
       <Box sx={{ ...chatListWrapper, mt: 0.5 }}>
         {!collapsed &&
-          chats.map((chat) => (
+          filteredChats.map((chat) => (
             <ChatSidebarItem
               key={chat.id}
               chat={chat}

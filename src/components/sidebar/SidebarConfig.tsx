@@ -27,6 +27,10 @@ export const sidebarTopItems: SidebarTopItem[] = [
   },
 ];
 
+export const searchItem: SidebarTopItem = sidebarTopItems.find(
+  item => item.key === "search"
+)!;
+
 export const sidebarActions: SidebarActionItem[] = [
   {
     key: "newChat",
@@ -45,3 +49,4 @@ export const sidebarActions: SidebarActionItem[] = [
     ),
   },
 ];
+
